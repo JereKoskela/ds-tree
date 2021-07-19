@@ -13,3 +13,4 @@ ts = msprime.sim_ancestry(samples = n / 2,
 sfs = ts.allele_frequency_spectrum(mode='branch',
                                    span_normalise=False,
                                    polarised=True)
+print(sfs / sum(sfs))
