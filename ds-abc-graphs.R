@@ -1,4 +1,4 @@
-samples <- c("South", "Thistilf")
+samples <- c("South", "Thistilfj")
 likelihoods <- 1:2
 
 hist_tags = c("a","b","c","d")
