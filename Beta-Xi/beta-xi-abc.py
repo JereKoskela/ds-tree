@@ -7,7 +7,7 @@ import numpy
 import scipy.special
 
 # Desider number of MCMC steps.
-steps = 1000000
+steps = 10000
 
 # Replace below with path to observed data file. It reads in the first line.
 with open("../South-gl1-nsfs.txt", "r") as f:
