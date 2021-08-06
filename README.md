@@ -9,7 +9,7 @@ The central tools are
 Further tools include
 
 3. R scripts for post-processing ABC output and illustrating the resulting model fit,
-4. a Python script for a corresponding ABC sampler under the diploid Beta-Xi-coalescent with exponential population growth, described in e.g. [Koskela and Wilke Berenguer (2019)](https://www.sciencedirect.com/science/article/pii/S0025556418303523), and
+4. a Python script for a corresponding ABC sampler under the diploid Xi-Beta-coalescent with exponential population growth, described in e.g. [Koskela and Wilke Berenguer (2019)](https://www.sciencedirect.com/science/article/pii/S0025556418303523), and
 5. a Python script for simulating the Kingman coalescent with specified population size histories.
 
 All aforementioned Python scripts use [msprime](https://tskit.dev/msprime/docs/stable/intro.html).
@@ -24,6 +24,7 @@ Item 3 above requires R (tested using RStudio 1.4.1106 with R version 4.1.0).
 # Compilation
 
 To compile the Durrett-Schweinsberg simulator and its corresponding ABC sampler, call `make` and `make sim` in the project root.
+Compilation should take no more than a few seconds.
 The other parts of the repository do not require compilation.
 
 # Tutorial
@@ -35,7 +36,9 @@ Run the simulator by compiling, and then calling
 ```
 ./simulate n c r
 ```
-where `n` is the sample size, `c` is the parameter, and `r` is the desired number of replicates. See included `ds-simulate-spectra.sh` shell script for examples.
+where `n` is the sample size, `c` is the parameter, and `r` is the desired number of replicates.
+See included `ds-simulate-spectra.sh` shell script for examples.
+The combined serial runtime of `ds-simulate-spectra.sh` on a typical mid-range desktop is around two minutes. 
 
 ## Durrett-Schweinsberg ABC
 
@@ -44,22 +47,38 @@ Run the simulator by compiling, and then calling
 ```
 ./abc n sfs
 ```
-where `n` is the desired number of MCMC steps and `sfs` is the observed normalised spectrum.
+where `n` is the desired number of MCMC steps and `sfs` is the location of a text file containing the observed normalised spectrum.
 The call returns a sampled value of `c` per MCMC step.
-Four example spectra (South-gl1-nsfs.txt, South-gl2-nsfs.txt, Thistilfj-gl1-nsfs.txt, and Thistilfj-gl2-nsfs.txt) have been provided, along with the `ds-abc.sh` shell script with examples.
+Four example spectra (South-gl1-nsfs.txt, South-gl2-nsfs.txt, Thistilfj-gl1-nsfs.txt, and Thistilfj-gl2-nsfs.txt) are provided, along with the `ds-abc.sh` shell script with an example simulation call for each spectrum.
+The serial runtime of the script on a mid-range desktop is around 5 hours, with each individual example taking between 60 and 100 minutes. 
+
+**Warning** The numbers of MCMC steps in these examples have been set to 10 000 for the purposes of illustration in a reasonable amount of CPU time.
+For throroughly convergent results, we recommend increasing the number of steps to 100 000. 
 
 ## Durrett-Schweinsberg postprocessing
 
-The R scripts `ds-abc-graphs.R` and `ds-sfs-graphs.R` are postprocessing scripts for visualising the output from `ds-abc.sh` and `ds-simulate-spectra.sh`. They assume that the working directory of your R client is set to the location of the output from the shell scripts.
+The R scripts `ds-abc-graphs.R` and `ds-sfs-graphs.R` are postprocessing scripts for visualising the output from `ds-abc.sh` and `ds-simulate-spectra.sh`.
+They assume that the working directory of your R client is set to the location of the output from the `ds-simulate-spectra.sh` and`ds-abc.sh` shell scripts.
+These scripts run in no more than a few seconds each.
 
-## Beta-Xi ABC
+## Xi-Beta ABC
 
-The `beta-xi-abc.py` Python script implements the ABC MCMC method of [Vihola and Franks (2020)](https://academic.oup.com/biomet/article/107/2/381/5721278) for the Beta-Xi`(2 - a, a)`-coalescent with exponential population growth. The object of inference is the tuple `(a, g)`, where the former governs the degree of skewness of the family size distribution in the Beta-coalescent, and `g` is the population-rescaled rate of exponential growth. The (improper) prior distribution is uniform on the 2d positive orthant. The location of an observed normalised site frequency spectrum needs to be specified on line 13 of the script. Simulated site frequency spectra are generated using `msprime`.
+The `beta-xi-abc.py` Python script implements the ABC MCMC method of [Vihola and Franks (2020)](https://academic.oup.com/biomet/article/107/2/381/5721278) for the Xi-Beta`(2 - a, a)`-coalescent with exponential population growth.
+The object of inference is the tuple `(a, g)`, where the former governs the degree of skewness of the family size distribution in the Beta-coalescent, and `g` is the population-rescaled rate of exponential growth.
+The (improper) prior distribution is uniform on the 2d positive orthant.
+The location of an observed normalised site frequency spectrum needs to be specified on line 13 of the script.
+Simulated site frequency spectra are generated using `msprime`.
+Using the provided settings, `beta-xi-abc.py` runs in around 4 hours on a midrange desktop.
+
+**Warning** The numbers of MCMC steps in these examples have been set to 10 000 for the purposes of illustration in a reasonable amount of CPU time.
+For throroughly convergent results, we recommend increasing the number of steps to 100 000. 
 
 ## Beta-Xi simulator
 
-The `beta-xi-sfs.py` is a Python script for simulating a normalised site frequency spectrum under the Beta-Xi-coalescent with exponential population growth using `msprime`. 
+The `beta-xi-sfs.py` is a Python script for simulating a normalised site frequency spectrum under the Beta-Xi-coalescent with exponential population growth using `msprime`.
+With the present parameter values, it runs in under a second. 
 
 ## Kingman coalescent simulator 
 
 The `skyline.py` and `smcpp.py` Python scripts call `msprime` to simulate site frequency spectra under the Kingman coalescent with respective population size histories specified in the scripts.
+Approximate runtimes for these scripts on a mid-range desktop are 7 minutes (`skyline.py`) and 3 minutes (`smcpp.py`).
