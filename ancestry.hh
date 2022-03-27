@@ -89,7 +89,7 @@ struct Ancestry {
       if (gsl_rng_uniform(gen) < 1 / (1 + c)) {
         family_size = 2;
       } else {
-        y = sqrt(2 * gsl_rng_uniform(gen));
+        y = sqrt(gsl_rng_uniform(gen));
         if (y > 1e-9) {
           u = (n - 1) * log(1 - y) + log(1 + (n - 1) * y);
           u = exp(log(1 - exp(u)) - 2 * log(y) - gsl_sf_lnchoose(n, 2));
