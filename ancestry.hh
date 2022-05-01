@@ -84,9 +84,9 @@ struct Ancestry {
     int n = (int)active.size();
     int family_size = 0;
     while (n > 1) {
-      rate = gsl_sf_choose(n, 2) * (1 + c);
+      rate = gsl_sf_choose(n, 2) * (1 + c / 2);
       sim_time += gsl_ran_exponential(gen, 1 / rate);
-      if (gsl_rng_uniform(gen) < 1 / (1 + c)) {
+      if (gsl_rng_uniform(gen) < 1 / (1 + c / 2)) {
         family_size = 2;
       } else {
         y = sqrt(gsl_rng_uniform(gen));
