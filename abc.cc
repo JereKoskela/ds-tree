@@ -57,13 +57,12 @@ int main(int argc, char **argv) {
       }
     }
     for (int j = 0; j < n - 1; j++) {
-      new_sfs[j] += log(new_sfs[j]) - log(1 - new_sfs[j]);
+      new_sfs[j] = log(new_sfs[j]) - log(1 - new_sfs[j]);
     }
     d = 0;
     for (int j = 0; j < n - 1; j++) {
-      d += (obs_sfs[j] - new_sfs[j]) * (obs_sfs[j] - new_sfs[j]);
+      d += fabs(obs_sfs[j] - new_sfs[j]);
     }
-    d = sqrt(d);
     if (i == 0) {
       tol = d;
       c_mean = (c + c_new) / 2.0;
