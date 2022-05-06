@@ -15,7 +15,7 @@ with open("../South-gl1-nsfs.txt", "r") as f:
 n = len(nsfs) + 1
 # Small regulariser to avoid zeros in simulated SFSs
 reg = min(nsfs) / 100
-logit_sfs = numpy.array([math.log(i + reg) - math.log(1 - i - reg) for i in nsfs])
+logit_sfs = numpy.array([math.log(i + reg) - math.log(1 - i + reg) for i in nsfs])
 
 a_var = 0.1**2
 g_var = 0.01**2
@@ -52,8 +52,9 @@ for i in range(1, steps):
                                            span_normalise=False,
                                            polarised=True)
     nsfs_new = sfs_new[1:n] / sum(sfs_new)
-    logit_sfs_new = numpy.array([math.log(j + reg) - math.log(1 - j - reg) for j in nsfs_new])
-    d = math.sqrt(numpy.dot(logit_sfs, logit_sfs_new))
+    logit_sfs_new = numpy.array([math.log(j + reg) - math.log(1 - j + reg) for j in nsfs_new])
+    d = math.sqrt(numpy.dot(numpy.subtract(logit_sfs, logit_sfs_new),
+                            numpy.subtract(logit_sfs, logit_sfs_new)))
     accepted = 0
     if i == 1:
         tol = d
