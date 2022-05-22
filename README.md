@@ -9,8 +9,9 @@ The central tools are
 Further tools include
 
 3. R scripts for post-processing ABC output and illustrating the resulting model fit,
-4. a Python script for a corresponding ABC sampler under the diploid Xi-Beta-coalescent with exponential population growth, described in e.g. [Koskela and Wilke Berenguer (2019)](https://www.sciencedirect.com/science/article/pii/S0025556418303523), and
-5. a Python script for simulating the Kingman coalescent with specified population size histories.
+4. a Python script for a corresponding ABC sampler under the diploid Xi-Beta-coalescent with exponential population growth, described in e.g. [Koskela and Wilke Berenguer (2019)](https://www.sciencedirect.com/science/article/pii/S0025556418303523),
+5. a Python script for simulating the Kingman coalescent with specified population size histories, and
+6. an adaptive ABC pipeline for linkage disequilibrium under a two-locus generalisation of the [Durrett and Schweinsberg (2005)](https://www.sciencedirect.com/science/article/pii/S0304414905000608) coalescent, for sample size 2 only.
 
 All aforementioned Python scripts use [msprime](https://tskit.dev/msprime/docs/stable/intro.html).
 
@@ -25,6 +26,7 @@ Item 3 above requires R (tested using RStudio 1.4.1106 with R version 4.1.0).
 
 To compile the Durrett-Schweinsberg simulator and its corresponding ABC sampler, call `make` and `make sim` in the project root.
 Compilation should take no more than a few seconds.
+The LD tool also requires complilation by calling `make` in the LD folder.
 The other parts of the repository do not require compilation.
 
 # Tutorial
@@ -82,3 +84,16 @@ With the present parameter values, it runs in under a second.
 
 The `skyline.py` and `smcpp.py` Python scripts call `msprime` to simulate site frequency spectra under the Kingman coalescent with respective population size histories specified in the scripts.
 Approximate runtimes for these scripts on a mid-range desktop are 7 minutes (`skyline.py`) and 3 minutes (`smcpp.py`).
+
+## Durrett-Schweinsberg LD ABC
+
+The run the ABC pipeline, call `./simulate n` after compilation, where `n` is the desired number of MCMC steps.
+The `sim.sh` script contains an example.
+Initial values of parameters are hard-coded in `sim.cc`, and the data files `gap.txt` and `obs_r_squared.txt` contain examples of observed data files.
+The former specifies desired positions along a genome in physical coordinates (the first position is always at zero), and the latter specifies corresponding observed $r^2$ values for each pairwise comparison between the site at the origin, and the site each given distance away.
+The ABC pipeline attempts to match all provided values simultaneously by simulating pairwise realisations of the origin and each provided distance, though the weight given to higher distances decays as an inverse square.
+
+The output of the ABC run is an `n` by `d + 4` array, where `d` is the number of provided distances.
+Each row contains fitted values of all `d` $r^2$ values, preempted by four fitted parameter values: `c` as described above, `β / s` in the notation of [Durrett and Schweinsberg (2005)](https://www.sciencedirect.com/science/article/pii/S0304414905000608), a mutation rate `θ`, and a fraction of sweep events which affect the whole chromosome regardless of recombination.
+
+The `R` script `draw_recomb.R` plots histograms, diagnostic trace plots, and fitted $r^2$ profiles from stored ABC output.
